@@ -1,0 +1,26 @@
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: portfolio-service
+          uri:
+            lb://portfolio-service
+          predicates:
+            - Path=/api/portfolios/**
+        - id: stock-service
+          uri:
+            lb://stock-service
+          predicates:
+            - Path=/api/stocks/**
+
+  main:
+    web-application-type: reactive
+server:
+  port: 8888
+
+
