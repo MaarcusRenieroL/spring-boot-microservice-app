@@ -1,0 +1,76 @@
+version: '3.7'
+services:
+
+  postgres:
+    image: postgres
+    ports:
+      - "5431:5432"
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: postgres
+    networks:
+      - app-network
+
+  eureka-server:
+    image: eureka-server
+    ports:
+      -  "8761:8761"
+    restart: always
+    networks:
+      - app-network
+
+  api-gateway:
+    image: api-gateway-server
+    ports:
+      -  "8000:8000"
+    restart: always
+    depends_on:
+      -  eureka-server
+    networks:
+      - app-network
+    environment:
+      EUREKA_HOST: eureka-server
+      EUREKA_PORT: 8761
+
+  stock-service:
+    image: stock-service
+    ports:
+      - "8002:8002"
+    restart: always
+    depends_on:
+      - eureka-server
+      - postgres
+    networks:
+      - app-network
+    environment:
+      EUREKA_HOST: eureka-server
+      EUREKA_PORT: 8761
+      RDS_HOSTNAME: postgres
+      RDS_PORT: 5432
+      RDS_DB_NAME: postgres
+      RDS_USERNAME: postgres
+      RDS_PASSWORD: password
+
+  portfolio-service:
+    image: portfolio-service
+    ports:
+      - "8001:8001"
+    restart: always
+    depends_on:
+      - eureka-server
+      - postgres
+    networks:
+      - app-network
+    environment:
+      EUREKA_HOST: eureka-server
+      EUREKA_PORT: 8761
+      RDS_HOSTNAME: postgres
+      RDS_PORT: 5432
+      RDS_DB_NAME: postgres
+      RDS_USERNAME: postgres
+      RDS_PASSWORD: password
+
+networks:
+  app-network:

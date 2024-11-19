@@ -1,7 +1,10 @@
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: http://${EUREKA_HOST:localhost}:${EUREKA_PORT:8761}/eureka/
+  instance:
+    prefer-ip-address: true
+
 
 spring:
   cloud:
@@ -14,13 +17,9 @@ spring:
             - Path=/api/portfolios/**
         - id: stock-service
           uri:
-            lb://stock-service
+            lb://stocks-service
           predicates:
             - Path=/api/stocks/**
 
-  main:
-    web-application-type: reactive
 server:
-  port: 8888
-
-
+  port: 8000
